@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebaseConfig";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -11,19 +11,34 @@ interface CreateUser {
     confirmPassword: string;
 }
 
-export async function createUser(formData: CreateUser): Promise<any> {
+interface LoginUser {
+    email: string;
+    password: string;
+}
+
+export async function createUser(createData: CreateUser): Promise<any> {
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        const userCredential = await createUserWithEmailAndPassword(auth, createData.email, createData.password);
         const user = userCredential.user;
 
         if(user) {
             await setDoc(doc(db, "Users", user.uid), {
-                name: formData.name,
-                phone: formData.phone,
-                email: formData.email
+                name: createData.name,
+                phone: createData.phone,
+                email: createData.email
             });
         }
         
+        return user;
+    } catch (error) {
+        return error;
+    }
+}
+
+export async function login(loginData: LoginUser): Promise<any>  {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, loginData.email, loginData.password);
+        const user = userCredential.user;
         return user;
     } catch (error) {
         return error;

@@ -7,6 +7,9 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import FormField from "../components/FormField";
 import { validateLoginForm } from "../utils/validations/validateLoginForm";
+import { login } from "../services/authService";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 export function LoginPage() {
     const [formData, setFormData] = useState({
@@ -19,6 +22,9 @@ export function LoginPage() {
         password: ''
     });
 
+    const [snackbarFailOpen, setSnackbarFailOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
@@ -27,14 +33,31 @@ export function LoginPage() {
         });
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { errors, isValid } = validateLoginForm(formData, formErrors);
         setFormErrors(errors);
         if (isValid) {
-            console.log("Login bem-sucedido!");
-            console.log(formData);
+            const user = await login(formData);
+
+            if(user instanceof Error) {
+                setErrorMessage(user.message);
+                setSnackbarFailOpen(true);
+            }else {
+                console.log('Login realizado com sucesso.');
+            }
         }
+    };
+
+    const handleFailClose = (
+        event: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarFailOpen(false);
     };
 
     const formFields = [
@@ -69,6 +92,16 @@ export function LoginPage() {
                     >
                         Não tem conta? <Link href="/register" type="button">Registre-se</Link>
                     </Typography>
+
+                    <Snackbar
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        open={snackbarFailOpen}
+                        onClose={handleFailClose}
+                    >
+                        <Alert onClose={handleFailClose} severity="error" sx={{ width: '100%' }}>
+                            {errorMessage}
+                        </Alert>
+                    </Snackbar>
                 </Box>
             </Card>
         </Container>
