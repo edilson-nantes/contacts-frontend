@@ -22,8 +22,12 @@ export function LoginPage() {
         password: ''
     });
 
-    const [snackbarFailOpen, setSnackbarFailOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+    const handleSnackbarClose = (event: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+        if (reason === "clickaway") return;
+        setSnackbar({ ...snackbar, open: false });
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -41,23 +45,11 @@ export function LoginPage() {
             const user = await login(formData);
 
             if(user instanceof Error) {
-                setErrorMessage(user.message);
-                setSnackbarFailOpen(true);
+                setSnackbar({ open: true, message: user.message, severity: "error" });
             }else {
                 console.log('Login realizado com sucesso.');
             }
         }
-    };
-
-    const handleFailClose = (
-        event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarFailOpen(false);
     };
 
     const formFields = [
@@ -66,8 +58,8 @@ export function LoginPage() {
     ];
 
     return (
-        <Container className="flex flex-row items-center justify-center min-h-screen min-w-screen bg-stone-100">
-            <Card variant="outlined" className="p-8 w-[500px]">
+        <Container className="flex flex-row items-center justify-center h-screen min-w-full bg-stone-100">
+            <Card variant="outlined" className="p-8 w-full max-w-lg">
                 <Typography variant="h4">Login</Typography>
                 <Box component="form" noValidate className="flex flex-col gap-4 py-5 w-full" onSubmit={handleSubmit}>
                     {formFields.map((field) => (
@@ -88,12 +80,12 @@ export function LoginPage() {
                     </Button>
                     <Typography
                         variant="body1"
-                        sx={{ textAlign: 'center' }}
+                        className="text-center"
                     >
                         Não tem conta? <Link href="/register" type="button">Registre-se</Link>
                     </Typography>
 
-                    <SnackbarAlert open={snackbarFailOpen} message={errorMessage} severity="error" onClose={handleFailClose} />
+                    <SnackbarAlert open={snackbar.open} message={snackbar.message} severity={snackbar.severity as any} onClose={handleSnackbarClose} />
                 </Box>
             </Card>
         </Container>

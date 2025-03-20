@@ -29,10 +29,13 @@ export function RegisterPage() {
         password: '',
         confirmPassword: ''
     });
+    
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-    const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
-    const [snackbarFailOpen, setSnackbarFailOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const handleSnackbarClose = (event: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+        if (reason === "clickaway") return;
+        setSnackbar({ ...snackbar, open: false });
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -50,34 +53,11 @@ export function RegisterPage() {
             const user = await createUser(formData);
 
             if(user instanceof Error) {
-                setErrorMessage(user.message);
-                setSnackbarFailOpen(true);
+                setSnackbar({ open: true, message: user.message, severity: "error" });
             }else {
-                setSnackbarSuccessOpen(true);
+                setSnackbar({ open: true, message: "Registro bem-sucedido!", severity: "success" });
             }
         }
-    };
-
-    const handleSuccessClose = (
-        event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarSuccessOpen(false);
-    };
-
-    const handleFailClose = (
-        event: React.SyntheticEvent | Event,
-        reason?: SnackbarCloseReason,
-    ) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarFailOpen(false);
     };
 
     const formFields = [
@@ -90,8 +70,8 @@ export function RegisterPage() {
     ];
 
     return (
-        <Container className="flex flex-row items-center justify-center min-h-screen min-w-screen bg-stone-100">
-            <Card variant="outlined" className="p-8 w-[500px]">
+        <Container className="flex flex-row items-center justify-center h-screen min-w-full bg-stone-100">
+            <Card variant="outlined" className="p-8 w-full max-w-lg">
                 <Typography variant="h4">Cadastro</Typography>
                 <Box component="form" noValidate className="flex flex-col gap-4 py-5 w-full" onSubmit={handleSubmit}>
                     {formFields.map((field) => (
@@ -112,13 +92,12 @@ export function RegisterPage() {
                     </Button>
                     <Typography
                         variant="body1"
-                        sx={{ textAlign: 'center' }}
+                        className="text-center"
                     >
                         Já tem conta? <Link href="/" type="button">Login</Link>
                     </Typography>
 
-                    <SnackbarAlert open={snackbarSuccessOpen} message="Cadastro realizado com sucesso!" severity="success" onClose={handleSuccessClose} />
-                    <SnackbarAlert open={snackbarFailOpen} message={errorMessage} severity="error" onClose={handleFailClose} />
+                    <SnackbarAlert open={snackbar.open} message={snackbar.message} severity={snackbar.severity as any} onClose={handleSnackbarClose} />
 
                 </Box>
             </Card>
