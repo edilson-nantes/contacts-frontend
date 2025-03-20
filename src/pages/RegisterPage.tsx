@@ -1,4 +1,4 @@
-import { Alert } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -6,9 +6,9 @@ import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
-
 import { useState } from "react";
 import FormField from "../components/FormField";
+import { validateRegisterForm } from "../utils/validations/validateRegisterForm";
 
 export function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -39,62 +39,11 @@ export function RegisterPage() {
         });
     };
 
-    const validateInputs = () => {
-        let errors = { ...formErrors };
-        let isValid = true;
-
-        if (!formData.name.trim()) {
-            errors.name = 'Preencha o nome.';
-            isValid = false;
-        } else {
-            errors.name = '';
-        }
-
-        if (!formData.phone.trim()) {
-            errors.phone = 'Preencha o telefone.';
-            isValid = false;
-        } else {
-            errors.phone = '';
-        }
-
-        if (!formData.email.trim()) {
-            errors.email = 'Preencha o email.';
-            isValid = false;
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            errors.email = 'Digite um endereço de email válido.';
-            isValid = false;
-        } else {
-            errors.email = '';
-        }
-
-        if (formData.email !== formData.confirmEmail) {
-            errors.confirmEmail = 'Os emails não coincidem.';
-            isValid = false;
-        } else {
-            errors.confirmEmail = '';
-        }
-
-        if (!formData.password.trim()) {
-            errors.password = 'Preencha a senha.';
-            isValid = false;
-        } else {
-            errors.password = '';
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            errors.confirmPassword = 'As senhas não coincidem.';
-            isValid = false;
-        } else {
-            errors.confirmPassword = '';
-        }
-
-        setFormErrors(errors);
-        return isValid;
-    };
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (validateInputs()) {
+        const { errors, isValid } = validateRegisterForm(formData, formErrors);
+        setFormErrors(errors);
+        if (isValid) {
             console.log("Registro bem-sucedido!");
             console.log(formData);
             setSnackbarOpen(true);

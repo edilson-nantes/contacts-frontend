@@ -6,6 +6,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import FormField from "../components/FormField";
+import { validateLoginForm } from "../utils/validations/validateLoginForm";
 
 export function LoginPage() {
     const [formData, setFormData] = useState({
@@ -26,34 +27,11 @@ export function LoginPage() {
         });
     };
 
-    const validateInputs = () => {
-        let errors = { ...formErrors };
-        let isValid = true;
-
-        if (!formData.email.trim()) {
-            errors.email = 'Preencha o email.';
-            isValid = false;
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            errors.email = 'Digite um endereço de email válido.';
-            isValid = false;
-        } else {
-            errors.email = '';
-        }
-
-        if (!formData.password.trim()) {
-            errors.password = 'Preencha a senha.';
-            isValid = false;
-        } else {
-            errors.password = '';
-        }
-
-        setFormErrors(errors);
-        return isValid;
-    };
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (validateInputs()) {
+        const { errors, isValid } = validateLoginForm(formData, formErrors);
+        setFormErrors(errors);
+        if (isValid) {
             console.log("Login bem-sucedido!");
             console.log(formData);
         }
