@@ -1,15 +1,15 @@
-import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
-import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import { SnackbarCloseReason } from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import FormField from "../components/FormField";
 import { validateRegisterForm } from "../utils/validations/validateRegisterForm";
 import { createUser } from "../services/authService";
+import { SnackbarAlert } from "../components/SnackbarAlert";
 
 export function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -117,26 +117,8 @@ export function RegisterPage() {
                         Já tem conta? <Link href="/" type="button">Login</Link>
                     </Typography>
 
-                    <Snackbar
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        open={snackbarSuccessOpen}
-                        autoHideDuration={5000}
-                        onClose={handleSuccessClose}
-                    >
-                        <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-                            Registro bem-sucedido!
-                        </Alert>
-                    </Snackbar>
-
-                    <Snackbar
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        open={snackbarFailOpen}
-                        onClose={handleFailClose}
-                    >
-                        <Alert onClose={handleFailClose} severity="error" sx={{ width: '100%' }}>
-                            {errorMessage}
-                        </Alert>
-                    </Snackbar>
+                    <SnackbarAlert open={snackbarSuccessOpen} message="Cadastro realizado com sucesso!" severity="success" onClose={handleSuccessClose} />
+                    <SnackbarAlert open={snackbarFailOpen} message={errorMessage} severity="error" onClose={handleFailClose} />
 
                 </Box>
             </Card>

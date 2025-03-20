@@ -8,11 +8,11 @@ import { useState } from "react";
 import FormField from "../components/FormField";
 import { validateLoginForm } from "../utils/validations/validateLoginForm";
 import { login } from "../services/authService";
-import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import { SnackbarCloseReason } from "@mui/material/Snackbar";
+import { SnackbarAlert } from "../components/SnackbarAlert";
 
 export function LoginPage() {
-    const [formData, setFormData] = useState({
+     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
@@ -93,15 +93,7 @@ export function LoginPage() {
                         Não tem conta? <Link href="/register" type="button">Registre-se</Link>
                     </Typography>
 
-                    <Snackbar
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        open={snackbarFailOpen}
-                        onClose={handleFailClose}
-                    >
-                        <Alert onClose={handleFailClose} severity="error" sx={{ width: '100%' }}>
-                            {errorMessage}
-                        </Alert>
-                    </Snackbar>
+                    <SnackbarAlert open={snackbarFailOpen} message={errorMessage} severity="error" onClose={handleFailClose} />
                 </Box>
             </Card>
         </Container>
