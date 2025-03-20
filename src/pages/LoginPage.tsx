@@ -46,8 +46,6 @@ export function LoginPage() {
 
             if(user instanceof Error) {
                 setSnackbar({ open: true, message: user.message, severity: "error" });
-            }else {
-                console.log('Login realizado com sucesso.');
             }
         }
     };

@@ -11,13 +11,13 @@ export function Router() {
         auth.onAuthStateChanged((user) => {
             setUser(user);
         })
-    })
+    }, [])
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={user ? <Navigate to ="/home" /> : <LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/home" element={<HomePage />} />
+                <Route path="/home" element={<HomePage  user={user}/>} />
             </Routes>
         </BrowserRouter>
     );
