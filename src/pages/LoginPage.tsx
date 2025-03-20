@@ -1,5 +1,11 @@
-import { Box, Typography, TextField, Button, Card, FormControl, Container, Link } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import FormField from "../components/FormField";
 
 export function LoginPage() {
     const [formData, setFormData] = useState({
@@ -11,16 +17,7 @@ export function LoginPage() {
         email: '',
         password: ''
     });
-/*************  ✨ Codeium Command ⭐  *************/
-    /**
-     * Handles the login form submission.
-     * 
-     * If the email or password is invalid, it prevents the default form submission.
-     * Otherwise, it logs a success message and prints the entered email and password.
-     * 
-     * @param event The form event.
-     */
-/******  15c886f7-a5fb-46ac-8c0c-c6c1f4bbe27e  *******/
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
@@ -62,50 +59,38 @@ export function LoginPage() {
         }
     };
 
+    const formFields = [
+        { id: 'email', name: 'email', label: 'Email', type: 'email' },
+        { id: 'password', name: 'password', label: 'Password', type: 'password' },
+    ];
+
     return (
         <Container className="flex flex-row items-center justify-center min-h-screen min-w-screen bg-stone-100">
             <Card variant="outlined" className="p-8 w-[500px]">
                 <Typography variant="h4">Login</Typography>
                 <Box component="form" noValidate className="flex flex-col gap-4 py-5 w-full" onSubmit={handleSubmit}>
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.email}
-                            helperText={formErrors.email}
-                            variant="outlined"
-                            id="email"
-                            type="email"
-                            name="email"
-                            label="Email"
-                            autoFocus
-                            required
-                            fullWidth
-                            value={formData.email}
-                            color={formErrors.email ? 'error' : 'primary'}
+                    {formFields.map((field) => (
+                        <FormField
+                            key={field.id}
+                            id={field.id}
+                            name={field.name}
+                            label={field.label}
+                            type={field.type}
+                            value={formData[field.name as keyof typeof formData]}
+                            error={formErrors[field.name as keyof typeof formErrors]}
                             onChange={handleChange}
                         />
-                    </FormControl>
-
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.password}
-                            helperText={formErrors.password}
-                            variant="outlined"
-                            id="password"
-                            name="password"
-                            type="password"
-                            label="Password"
-                            required
-                            fullWidth
-                            value={formData.password}
-                            color={formErrors.password ? 'error' : 'primary'}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
+                    ))}
 
                     <Button type="submit" variant="contained" color="primary">
                         Login
                     </Button>
-                    <Typography variant="body1" sx={{ textAlign: 'center' }}>Não tem conta? <Link component="button" type="button">Registre-se</Link></Typography>
+                    <Typography
+                        variant="body1"
+                        sx={{ textAlign: 'center' }}
+                    >
+                        Não tem conta? <Link href="/register" type="button">Registre-se</Link>
+                    </Typography>
                 </Box>
             </Card>
         </Container>

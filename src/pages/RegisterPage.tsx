@@ -1,5 +1,14 @@
-import { Box, Typography, TextField, Button, Card, FormControl, Container, Link } from "@mui/material";
+import { Alert } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import Typography from "@mui/material/Typography";
+
 import { useState } from "react";
+import FormField from "../components/FormField";
 
 export function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -19,6 +28,8 @@ export function RegisterPage() {
         password: '',
         confirmPassword: ''
     });
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -86,121 +97,69 @@ export function RegisterPage() {
         if (validateInputs()) {
             console.log("Registro bem-sucedido!");
             console.log(formData);
+            setSnackbarOpen(true);
         }
     };
+
+    const handleClose = (
+        event: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+      ) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setSnackbarOpen(false);
+      };
+
+    const formFields = [
+        { id: 'name', name: 'name', label: 'Nome', type: 'text' },
+        { id: 'phone', name: 'phone', label: 'Telefone', type: 'text' },
+        { id: 'email', name: 'email', label: 'Email', type: 'email' },
+        { id: 'confirmEmail', name: 'confirmEmail', label: 'Confirme o email', type: 'email' },
+        { id: 'password', name: 'password', label: 'Senha', type: 'password' },
+        { id: 'confirmPassword', name: 'confirmPassword', label: 'Confirme a senha', type: 'password' },
+    ];
 
     return (
         <Container className="flex flex-row items-center justify-center min-h-screen min-w-screen bg-stone-100">
             <Card variant="outlined" className="p-8 w-[500px]">
                 <Typography variant="h4">Cadastro</Typography>
                 <Box component="form" noValidate className="flex flex-col gap-4 py-5 w-full" onSubmit={handleSubmit}>
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.name}
-                            helperText={formErrors.name}
-                            variant="outlined"
-                            id="name"
-                            type="text"
-                            name="name"
-                            label="Nome"
-                            autoFocus
-                            required
-                            fullWidth
-                            value={formData.name}
-                            color={formErrors.name ? 'error' : 'primary'}
+                    {formFields.map((field) => (
+                        <FormField
+                            key={field.id}
+                            id={field.id}
+                            name={field.name}
+                            label={field.label}
+                            type={field.type}
+                            value={formData[field.name as keyof typeof formData]}
+                            error={formErrors[field.name as keyof typeof formErrors]}
                             onChange={handleChange}
                         />
-                    </FormControl>
-
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.phone}
-                            helperText={formErrors.phone}
-                            variant="outlined"
-                            id="phone"
-                            type="text"
-                            name="phone"
-                            label="Telefone"
-                            required
-                            fullWidth
-                            value={formData.phone}
-                            color={formErrors.phone ? 'error' : 'primary'}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.email}
-                            helperText={formErrors.email}
-                            variant="outlined"
-                            id="email"
-                            type="email"
-                            name="email"
-                            label="Email"
-                            required
-                            fullWidth
-                            value={formData.email}
-                            color={formErrors.email ? 'error' : 'primary'}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.confirmEmail}
-                            helperText={formErrors.confirmEmail}
-                            variant="outlined"
-                            id="confirmEmail"
-                            type="email"
-                            name="confirmEmail"
-                            label="Confirme o email"
-                            required
-                            fullWidth
-                            value={formData.confirmEmail}
-                            color={formErrors.confirmEmail ? 'error' : 'primary'}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.password}
-                            helperText={formErrors.password}
-                            variant="outlined"
-                            id="password"
-                            name="password"
-                            type="password"
-                            label="Senha"
-                            required
-                            fullWidth
-                            value={formData.password}
-                            color={formErrors.password ? 'error' : 'primary'}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
-
-                    <FormControl>
-                        <TextField
-                            error={!!formErrors.confirmPassword}
-                            helperText={formErrors.confirmPassword}
-                            variant="outlined"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            type="password"
-                            label="Confirme a senha"
-                            required
-                            fullWidth
-                            value={formData.confirmPassword}
-                            color={formErrors.confirmPassword ? 'error' : 'primary'}
-                            onChange={handleChange}
-                        />
-                    </FormControl>
+                    ))}
 
                     <Button type="submit" variant="contained" color="primary">
                         Registrar
                     </Button>
-                    <Typography variant="body1" sx={{ textAlign: 'center' }}>Já tem conta? <Link component="button" type="button">Login</Link></Typography>
+                    <Typography
+                        variant="body1"
+                        sx={{ textAlign: 'center' }}
+                    >
+                        Já tem conta? <Link href="/" type="button">Login</Link>
+                    </Typography>
+
+                    <Snackbar
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        open={snackbarOpen}
+                        autoHideDuration={5000}
+                        onClose={handleClose}
+                    >
+                        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                            Registro bem-sucedido!
+                        </Alert>
+                    </Snackbar>
+
                 </Box>
             </Card>
         </Container>
