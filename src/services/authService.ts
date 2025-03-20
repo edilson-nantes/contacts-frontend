@@ -44,3 +44,11 @@ export async function login(loginData: LoginUser): Promise<any>  {
         return error;
     }
 }
+
+export async function logout(): Promise<any> {
+    try {
+        await auth.signOut();
+    } catch (error) {
+        return error;
+    }
+}
