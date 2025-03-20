@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import { useState } from "react";
 import FormField from "../components/FormField";
 import { validateRegisterForm } from "../utils/validations/validateRegisterForm";
+import { createUser } from "../services/authService";
 
 export function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -29,7 +30,9 @@ export function RegisterPage() {
         confirmPassword: ''
     });
 
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSuccessOpen, setSnackbarSuccessOpen] = useState(false);
+    const [snackbarFailOpen, setSnackbarFailOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -39,27 +42,43 @@ export function RegisterPage() {
         });
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { errors, isValid } = validateRegisterForm(formData, formErrors);
         setFormErrors(errors);
         if (isValid) {
-            console.log("Registro bem-sucedido!");
-            console.log(formData);
-            setSnackbarOpen(true);
+            const user = await createUser(formData);
+
+            if(user instanceof Error) {
+                setErrorMessage(user.message);
+                setSnackbarFailOpen(true);
+            }else {
+                setSnackbarSuccessOpen(true);
+            }
         }
     };
 
-    const handleClose = (
+    const handleSuccessClose = (
         event: React.SyntheticEvent | Event,
         reason?: SnackbarCloseReason,
-      ) => {
+    ) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
-    
-        setSnackbarOpen(false);
-      };
+
+        setSnackbarSuccessOpen(false);
+    };
+
+    const handleFailClose = (
+        event: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackbarFailOpen(false);
+    };
 
     const formFields = [
         { id: 'name', name: 'name', label: 'Nome', type: 'text' },
@@ -100,12 +119,22 @@ export function RegisterPage() {
 
                     <Snackbar
                         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                        open={snackbarOpen}
+                        open={snackbarSuccessOpen}
                         autoHideDuration={5000}
-                        onClose={handleClose}
+                        onClose={handleSuccessClose}
                     >
-                        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                        <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
                             Registro bem-sucedido!
+                        </Alert>
+                    </Snackbar>
+
+                    <Snackbar
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        open={snackbarFailOpen}
+                        onClose={handleFailClose}
+                    >
+                        <Alert onClose={handleFailClose} severity="error" sx={{ width: '100%' }}>
+                            {errorMessage}
                         </Alert>
                     </Snackbar>
 
