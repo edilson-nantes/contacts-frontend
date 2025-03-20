@@ -1,69 +1,76 @@
 import { Box, Typography, TextField, Button, Card, FormControl, Container, Link } from "@mui/material";
 import { useState } from "react";
 
-
 export function LoginPage() {
-    
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [emailError, setEmailError] = useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = useState('');
-    const [passwordError, setPasswordError] = useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        if (emailError || passwordError) {
-            event.preventDefault();
-            return;
-        }
-        console.log("Login successful!");
-
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
+    const [formErrors, setFormErrors] = useState({
+        email: '',
+        password: ''
+    });
+/*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Handles the login form submission.
+     * 
+     * If the email or password is invalid, it prevents the default form submission.
+     * Otherwise, it logs a success message and prints the entered email and password.
+     * 
+     * @param event The form event.
+     */
+/******  15c886f7-a5fb-46ac-8c0c-c6c1f4bbe27e  *******/
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
         });
     };
 
-    const validateInputs = (email: string, password: string) => {
+    const validateInputs = () => {
+        let errors = { ...formErrors };
         let isValid = true;
-        
-        if (!email.trim()) {
-            setEmailError(true);
-            setEmailErrorMessage('Preencha o email.');
+
+        if (!formData.email.trim()) {
+            errors.email = 'Preencha o email.';
             isValid = false;
-        }else if (!email || !/\S+@\S+\.\S+/.test(email)) {
-            setEmailError(true);
-            setEmailErrorMessage('Please enter a valid email address.');
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            errors.email = 'Digite um endereço de email válido.';
             isValid = false;
         } else {
-            setEmailError(false);
-            setEmailErrorMessage('');
-        }
-        
-        if (!password.trim()) {
-            setPasswordError(true);
-            setPasswordErrorMessage('Preencha a senha.');
-            isValid = false;
-        } else {
-            setPasswordError(false);
-            setPasswordErrorMessage('');
+            errors.email = '';
         }
 
+        if (!formData.password.trim()) {
+            errors.password = 'Preencha a senha.';
+            isValid = false;
+        } else {
+            errors.password = '';
+        }
+
+        setFormErrors(errors);
         return isValid;
     };
-    
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (validateInputs()) {
+            console.log("Login bem-sucedido!");
+            console.log(formData);
+        }
+    };
 
     return (
         <Container className="flex flex-row items-center justify-center min-h-screen min-w-screen bg-stone-100">
             <Card variant="outlined" className="p-8 w-[500px]">
                 <Typography variant="h4">Login</Typography>
                 <Box component="form" noValidate className="flex flex-col gap-4 py-5 w-full" onSubmit={handleSubmit}>
-                    
                     <FormControl>
                         <TextField
-                            error={emailError}
-                            helperText={emailErrorMessage}
+                            error={!!formErrors.email}
+                            helperText={formErrors.email}
                             variant="outlined"
                             id="email"
                             type="email"
@@ -72,38 +79,35 @@ export function LoginPage() {
                             autoFocus
                             required
                             fullWidth
-                            value={email}
-                            color={emailError ? 'error' : 'primary'}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            color={formErrors.email ? 'error' : 'primary'}
+                            onChange={handleChange}
                         />
                     </FormControl>
 
                     <FormControl>
                         <TextField
-                            error={passwordError}
-                            helperText={passwordErrorMessage}
+                            error={!!formErrors.password}
+                            helperText={formErrors.password}
                             variant="outlined"
                             id="password"
                             name="password"
                             type="password"
                             label="Password"
-                            autoFocus
                             required
                             fullWidth
-                            value={password}
-                            color={passwordError ? 'error' : 'primary'}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formData.password}
+                            color={formErrors.password ? 'error' : 'primary'}
+                            onChange={handleChange}
                         />
                     </FormControl>
 
-                    <Button type="submit" variant="contained" color="primary" onClick={() => {validateInputs(email, password)}}>
+                    <Button type="submit" variant="contained" color="primary">
                         Login
                     </Button>
-                    <Typography variant="body1" sx={{textAlign: 'center'}}>Não tem conta? <Link component="button" type="button">Registre-se</Link></Typography>
+                    <Typography variant="body1" sx={{ textAlign: 'center' }}>Não tem conta? <Link component="button" type="button">Registre-se</Link></Typography>
                 </Box>
             </Card>
-      
         </Container>
-      
     );
 }
