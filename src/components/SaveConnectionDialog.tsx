@@ -5,6 +5,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
+import { useState } from "react";
+import { useConnections } from "../store/connections";
 
 interface SaveConnectionDialogProps {
     open: boolean
@@ -12,6 +14,9 @@ interface SaveConnectionDialogProps {
 }
 
 export function SaveConnectionDialog({open, handleClose}: SaveConnectionDialogProps) {
+    const [name, setName] = useState('');
+    const { addConnection } = useConnections();
+    
     return (
         <Dialog
             open={open}
@@ -21,7 +26,8 @@ export function SaveConnectionDialog({open, handleClose}: SaveConnectionDialogPr
             paper: {
                 component: 'form',
                 onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                    
+                    event.preventDefault();
+                    addConnection({name});
                     handleClose();
                 },
             },
@@ -41,6 +47,7 @@ export function SaveConnectionDialog({open, handleClose}: SaveConnectionDialogPr
                 label="Nome"
                 fullWidth
                 variant="standard"
+                onChange={(e) => setName(e.target.value)}
             />
             </DialogContent>
             <DialogActions>
