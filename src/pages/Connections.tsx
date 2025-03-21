@@ -7,6 +7,9 @@ import { useDrawer } from "../hooks/useDrawer"
 import { Header } from "../components/Header"
 import { ControlButtons } from "../components/ControlButtons"
 import { DataTable } from "../components/DataTable";
+import Button from "@mui/material/Button";
+import { useState } from "react";
+import { SaveConnectionDialog } from "../components/SaveConnectionDialog";
 
 //TODO: Buscar dados das conexões no firebase
 export function Connections({user}: any) {
@@ -14,13 +17,24 @@ export function Connections({user}: any) {
         return <Navigate to="/" />
     }
 
+    const [open, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const { drawerOpen, toggleDrawer } = useDrawer();
 
     const buttons = {
         addButton: {
             label: "Nova Conexão",
             variant: "contained" as const,
-            color: "primary" as const
+            color: "primary" as const,
+            action: handleClickOpen
         },
         deleteButton: {
             label: "Excluir",
@@ -48,7 +62,7 @@ export function Connections({user}: any) {
                 </Box>
                 <Box className="mt-5 mx-8 flex flex-row justify-center">
                     
-                    {/* TODO: Fazer com que as funcionalidades sejam passadas como props para genrenciar as conexões */}
+                    {/* TODO: Crar as funcionalidades genrenciar as conexões */}
                     <ControlButtons buttons={buttons}/>
 
                 </Box>
@@ -57,8 +71,11 @@ export function Connections({user}: any) {
                     
                     {/* TODO: Passar os dados da tabela como props */}
                     <DataTable rows={[]} columns={columns} paginationModel={paginationModel} />
+                    
 
                 </Box>
+
+                <SaveConnectionDialog open={open} handleClose={handleClose} />
             </Box>
         </Container>
     )

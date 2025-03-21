@@ -7,33 +7,53 @@ interface ControlButtonsProps {
         addButton:{
             label: string,
             variant: "contained" | "outlined" | "text",
-            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning"
+            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning",
+            action?: () => void
         }
         deleteButton:{
             label: string,
             variant: "contained" | "outlined" | "text",
-            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning"
+            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning",
+            action?: () => void
         }
         auxButton?: {
             label: string,
             variant: "contained" | "outlined" | "text",
-            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning"
+            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning",
+            action?: () => void
         }
     }
 }
 
-//TODO: Fazer com que as funcionalidades sejam passadas como props de acordo com a página(conexão ou contato)
 export function ControlButtons({buttons}: ControlButtonsProps) {
     return (
         <Card className="flex flex-row justify-between p-5 w-full">
             <Box className="flex flex-row justify-around w-2/12">
-                <Button variant={buttons.addButton.variant} color={buttons.addButton.color}>{buttons.addButton.label}</Button>
-                <Button variant={buttons.deleteButton.variant} color={buttons.deleteButton.color}>{buttons.deleteButton.label}</Button>
+                <Button
+                    variant={buttons.addButton.variant}
+                    color={buttons.addButton.color}
+                    onClick={buttons.addButton.action}
+                >
+                    {buttons.addButton.label}
+                </Button>
+                <Button
+                    variant={buttons.deleteButton.variant}
+                    color={buttons.deleteButton.color}
+                    onClick={buttons.deleteButton.action}
+                >
+                    {buttons.deleteButton.label}
+                </Button>
             </Box>
 
             {buttons.auxButton && (
                 <Box className="flex flex-row justify-between w-auto">
-                    <Button variant={buttons.auxButton.variant} color={buttons.auxButton.color}>{buttons.auxButton.label}</Button>
+                    <Button
+                        variant={buttons.auxButton.variant}
+                        color={buttons.auxButton.color}
+                        onClick={buttons.auxButton.action}
+                    >
+                        {buttons.auxButton.label}
+                    </Button>
                 </Box>
             )}
         </Card>
