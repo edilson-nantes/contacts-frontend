@@ -49,14 +49,14 @@ export function HomePage({ user }: any) {
     }
 
     return (
-        <Container className="flex flex-row items-center justify-center h-screen min-w-full bg-stone-100">
+        <Container className="m-0 p-0 flex flex-row items-center justify-center h-screen min-w-full bg-stone-100">
             
             <MenuDrawer open={drawerOpen} toggleDrawer={toggleDrawer} />
-            <Box component="section" className="flex flex-col h-screen w-screen">
+            <Box className="flex flex-col h-screen w-screen">
                 <Box component="nav" className="w-screen">
                     <Header onClick={toggleDrawer} />
                 </Box>
-                <Box className="flex flex-col items-center justify-center" gap={10}>
+                <Box component="section" className="flex flex-col items-center" gap={10}>
                     <Typography variant="h2" gutterBottom>Bem vindo, {userDetails?.name}!</Typography>
                     <Typography variant="h3">Acesse o menu ao lado para começar</Typography>
                 </Box>
