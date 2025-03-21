@@ -26,7 +26,7 @@ interface ControlButtonsProps {
 export function ControlButtons({buttons}: ControlButtonsProps) {
     return (
         <Card className="flex flex-row justify-between p-5 w-full">
-            <Box className="flex flex-row justify-between w-2/12">
+            <Box className="flex flex-row justify-around w-2/12">
                 <Button variant={buttons.addButton.variant} color={buttons.addButton.color}>{buttons.addButton.label}</Button>
                 <Button variant={buttons.deleteButton.variant} color={buttons.deleteButton.color}>{buttons.deleteButton.label}</Button>
             </Box>
