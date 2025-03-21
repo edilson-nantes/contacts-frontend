@@ -62,7 +62,7 @@ export function Connections({user}: any) {
         { field: 'actions', headerName: 'Ações', type: 'number', flex: 0.8, minWidth: 120 },
       ];
 
-    const paginationModel = { page: 0, pageSize: 5 };
+    const paginationModel = { page: 0, pageSize: 10 };
     
     return (
         <Container className="flex flex-row items-center justify-center h-screen min-w-full bg-stone-100">
