@@ -6,12 +6,14 @@ import { GridColDef } from "@mui/x-data-grid";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 
 interface DataTableProps {
-    rows: any[]
+    rows: any
     columns: GridColDef[]
     paginationModel: any
 }
 
-export function DataTable({ rows, columns, paginationModel }: DataTableProps) {
+export function DataTable({ rows,columns, paginationModel }: DataTableProps) {
+    
+    
     return (
         <Paper sx={{ height: "max-content", width: '100%', }}>
             <Box className="mt-5 mx-8 flex flex-row justify-between">

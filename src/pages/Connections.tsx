@@ -7,9 +7,11 @@ import { useDrawer } from "../hooks/useDrawer"
 import { Header } from "../components/Header"
 import { ControlButtons } from "../components/ControlButtons"
 import { DataTable } from "../components/DataTable";
-import Button from "@mui/material/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SaveConnectionDialog } from "../components/SaveConnectionDialog";
+import { Connection } from "../services/connectionService";
+import { useConnections } from "../store/connections";
+
 
 //TODO: Buscar dados das conexões no firebase
 export function Connections({user}: any) {
@@ -18,6 +20,16 @@ export function Connections({user}: any) {
     }
 
     const [open, setOpen] = useState(false);
+    const {loadConnections, connections} = useConnections();
+    const [rows, setRows] = useState<Connection[]>([]);
+    
+    useEffect(() => {
+        async function loadConnectionsAsync() {
+            const connections = await loadConnections();
+            setRows(connections);
+        }
+        loadConnectionsAsync();
+    }, [connections]);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -70,7 +82,7 @@ export function Connections({user}: any) {
                 <Box className="mt-5 mx-8 flex flex-row justify-center">
                     
                     {/* TODO: Passar os dados da tabela como props */}
-                    <DataTable rows={[]} columns={columns} paginationModel={paginationModel} />
+                    <DataTable rows={rows} columns={columns} paginationModel={paginationModel} />
                     
 
                 </Box>
