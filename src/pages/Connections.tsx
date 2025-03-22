@@ -13,6 +13,8 @@ import { Connection } from "../services/connectionService";
 import { useConnections } from "../store/connections";
 import Button from "@mui/material/Button";
 import { DeleteDialog } from "../components/DeleteDialog";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 
 export function Connections({user}: any) {
@@ -53,11 +55,6 @@ export function Connections({user}: any) {
             color: "primary" as const,
             action: handleClickOpen
         },
-        deleteButton: {
-            label: "Excluir",
-            variant: "outlined" as const,
-            color: "error" as const
-        }
     }
 
     const handleEditConnection = (params: any) => {
@@ -92,10 +89,10 @@ export function Connections({user}: any) {
             headerName: 'Ações',
             renderCell: (params) => (
               <Box className="flex flex-row justify-center" gap={2}>
-                <Button variant="text" onClick={() => handleEditConnection(params)}>
+                <Button startIcon={ <EditIcon /> } variant="text" onClick={() => handleEditConnection(params)}>
                     Editar
                 </Button>
-                <Button variant="text" color="error" onClick={() => handleDeleteConnection(params)}>
+                <Button startIcon={ <DeleteIcon /> } variant="text" color="error" onClick={() => handleDeleteConnection(params)}>
                     Excluir
                 </Button>
               </Box>

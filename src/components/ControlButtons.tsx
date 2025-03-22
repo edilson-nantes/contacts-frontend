@@ -1,16 +1,11 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
+import AddIcon from '@mui/icons-material/Add';
 
 interface ControlButtonsProps {
     buttons:{
         addButton:{
-            label: string,
-            variant: "contained" | "outlined" | "text",
-            color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning",
-            action?: () => void
-        }
-        deleteButton:{
             label: string,
             variant: "contained" | "outlined" | "text",
             color: "inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning",
@@ -28,20 +23,14 @@ interface ControlButtonsProps {
 export function ControlButtons({buttons}: ControlButtonsProps) {
     return (
         <Card className="flex flex-row justify-between p-5 w-full">
-            <Box className="flex flex-row justify-around w-2/12">
+            <Box className="flex flex-row justify-start w-2/12">
                 <Button
+                    startIcon={<AddIcon />}
                     variant={buttons.addButton.variant}
                     color={buttons.addButton.color}
                     onClick={buttons.addButton.action}
                 >
                     {buttons.addButton.label}
-                </Button>
-                <Button
-                    variant={buttons.deleteButton.variant}
-                    color={buttons.deleteButton.color}
-                    onClick={buttons.deleteButton.action}
-                >
-                    {buttons.deleteButton.label}
                 </Button>
             </Box>
 
