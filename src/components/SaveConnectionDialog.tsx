@@ -38,6 +38,7 @@ export function SaveConnectionDialog({open, connection, handleClose}: SaveConnec
         }
 
         handleClose();
+        setName('');
     };
     
     return (

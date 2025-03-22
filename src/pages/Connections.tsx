@@ -12,6 +12,7 @@ import { SaveConnectionDialog } from "../components/SaveConnectionDialog";
 import { Connection } from "../services/connectionService";
 import { useConnections } from "../store/connections";
 import Button from "@mui/material/Button";
+import { DeleteDialog } from "../components/DeleteDialog";
 
 
 export function Connections({user}: any) {
@@ -21,6 +22,7 @@ export function Connections({user}: any) {
 
     const { drawerOpen, toggleDrawer } = useDrawer();
     const [open, setOpen] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const {loadConnections, connections} = useConnections();
     const [rows, setRows] = useState<Connection[]>([]);
     const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
@@ -70,6 +72,17 @@ export function Connections({user}: any) {
         handleClickOpen();
     }
 
+    const handleDeleteConnection = (params: any) => {
+        const connectionId = params.row.id;
+        const connectionName = params.row.name;
+
+        setSelectedConnection({
+            id: connectionId,
+            name: connectionName
+        })
+        setOpenDeleteDialog(true);
+    }
+
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', flex: 0.5, minWidth: 80 },
         { field: 'name', headerName: 'Nome', flex: 1, minWidth: 150 },
@@ -82,7 +95,7 @@ export function Connections({user}: any) {
                 <Button variant="text" onClick={() => handleEditConnection(params)}>
                     Editar
                 </Button>
-                <Button variant="text">
+                <Button variant="text" color="error" onClick={() => handleDeleteConnection(params)}>
                     Excluir
                 </Button>
               </Box>
@@ -101,22 +114,17 @@ export function Connections({user}: any) {
                 <Box component="nav" className="w-screen">
                     <Header onClick={toggleDrawer} />
                 </Box>
-                <Box className="mt-5 mx-8 flex flex-row justify-center">
-                    
-                    {/* TODO: Crar as funcionalidades genrenciar as conexões */}
-                    <ControlButtons buttons={buttons}/>
 
+                <Box className="mt-5 mx-8 flex flex-row justify-center">
+                    <ControlButtons buttons={buttons}/>
                 </Box>
 
                 <Box className="mt-5 mx-8 flex flex-row justify-center">
-                    
-                    {/* TODO: Passar os dados da tabela como props */}
                     <DataTable rows={rows} columns={columns} paginationModel={paginationModel} />
-                    
-
                 </Box>
 
                 <SaveConnectionDialog open={open} connection={selectedConnection} handleClose={handleClose} />
+                <DeleteDialog open={openDeleteDialog} connection={selectedConnection} handleClose={() => setOpenDeleteDialog(false)} />
             </Box>
         </Container>
     )

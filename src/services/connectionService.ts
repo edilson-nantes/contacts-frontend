@@ -1,5 +1,5 @@
 import { auth, db } from "../../firebaseConfig";
-import { addDoc, collection, doc, getDocs, updateDoc, } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc, } from "firebase/firestore";
 
 export interface Connection {
     id?: string;
@@ -43,7 +43,7 @@ export async function fetchConnections(): Promise<any> {
         return error; 
     }
 }
-//1vmKTSc2FPzi3Zdh886m
+
 export async function updateConnection(id: string, connection: Connection): Promise<any> {
     try {
         const user = auth.currentUser;
@@ -52,6 +52,18 @@ export async function updateConnection(id: string, connection: Connection): Prom
             await updateDoc(connectionRef, {
                 name: connection.name
             });
+        }
+    } catch (error) {
+        return error;
+    }
+}
+
+export async function deleteConnection(id: string): Promise<any> {
+    try {
+        const user = auth.currentUser;
+        if (user) {
+            const connectionRef = doc(db, "Users", user.uid, "Connections", id);
+            await deleteDoc(connectionRef);
         }
     } catch (error) {
         return error;

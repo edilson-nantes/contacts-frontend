@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createConnection, fetchConnections, updateConnection } from "../services/connectionService";
+import { createConnection, deleteConnection, fetchConnections, updateConnection } from "../services/connectionService";
 
 type Connection = {
     id?: string;
@@ -11,6 +11,7 @@ type State = {
     loadConnections: () => Promise<Connection[]>;
     addConnection: (connection: Connection) => void;
     editConnection: (connection: Connection) => void;
+    removeConnection: (id: string) => void;
 }
 
 export const useConnections = create<State>((set) => ({
@@ -39,6 +40,13 @@ export const useConnections = create<State>((set) => ({
                 }
                 return c;
             })
+        }));
+    },
+
+    removeConnection: async (id: string) => {
+        await deleteConnection(id);
+        set((state) => ({
+            connections: state.connections.filter((c) => c.id !== id)
         }));
     }
 }))

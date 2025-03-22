@@ -47,7 +47,7 @@ export function DataTable({ rows,columns, paginationModel }: DataTableProps) {
                 columns={columns}
                 initialState={{ pagination: { paginationModel } }}
                 pageSizeOptions={[10, 20, 50]}
-                checkboxSelection
+                disableRowSelectionOnClick={true}
                 sx={{ border: 0, padding: 0, margin: 2 }}
             />
         </Paper>
