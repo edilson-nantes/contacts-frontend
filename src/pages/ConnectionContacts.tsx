@@ -1,23 +1,23 @@
 import Container from "@mui/material/Container"
 import Box from "@mui/material/Box"
 import { GridColDef} from '@mui/x-data-grid';
-import { Navigate, useNavigate } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 import { MenuDrawer } from "../components/MenuDrawer"
 import { useDrawer } from "../hooks/useDrawer"
 import { Header } from "../components/Header"
 import { ControlButtons } from "../components/ControlButtons"
 import { DataTable } from "../components/DataTable";
 import { useEffect, useState } from "react";
-import { SaveConnectionDialog } from "../components/SaveConnectionDialog";
-import { Connection } from "../services/connectionService";
-import { useConnections } from "../store/connections";
 import Button from "@mui/material/Button";
 import { DeleteDialog } from "../components/DeleteDialog";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { SaveContactDialog } from "../components/SaveContactDialog";
+import { useContacts } from "../store/contacts";
+import { Contact } from "../services/contactService";
 
 
-export function Connections({user}: any) {
+export function ConnectionContacts({user}: any) {
     if (!user) {
         return <Navigate to="/" />
     }
@@ -26,79 +26,85 @@ export function Connections({user}: any) {
     const { drawerOpen, toggleDrawer } = useDrawer();
     const [open, setOpen] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const {loadConnections, connections} = useConnections();
-    const [rows, setRows] = useState<Connection[]>([]);
-    const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
+    const { contacts, loadContacts } = useContacts();
+    const [rows, setRows] = useState<Contact[]>([]);
+    const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+    const connectionId = useParams().id as string;
     
     useEffect(() => {
-        async function loadConnectionsAsync() {
-            const newConnections = await loadConnections();
-            if (JSON.stringify(newConnections) !== JSON.stringify(rows)) {
-                setRows(newConnections);
+        async function loadContactsAsync() {
+            const newContacts = await loadContacts(connectionId as string);
+            if (JSON.stringify(newContacts) !== JSON.stringify(rows)) {
+                setRows(newContacts);
             }
         }
-        loadConnectionsAsync();
-    }, [connections]);
+        loadContactsAsync();
+    }, [contacts]);
 
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
-        setSelectedConnection(null);
+        setSelectedContact(null);
         setOpen(false);
     };
 
     const buttons = {
         addButton: {
-            label: "Nova Conexão",
+            label: "Novo Contato",
             variant: "contained" as const,
             color: "primary" as const,
             action: handleClickOpen
         },
+        auxButton: {
+            label: "Enviar Mensagem",
+            variant: "contained" as const,
+            color: "primary" as const,
+            action: () => navigate("/connections")
+        }
     }
 
-    const handleEditConnection = (params: any) => {
-        const connectionId = params.row.id;
-        const connectionName = params.row.name;
+    const handleEditContact = (params: any) => {
+        const contactId = params.row.id;
+        const contactName = params.row.name;
+        const contactPhone = params.row.phone;
 
-        setSelectedConnection({
-            id: connectionId,
-            name: connectionName
+        setSelectedContact({
+            id: contactId,
+            name: contactName,
+            phone: contactPhone
         });
 
         handleClickOpen();
     }
 
-    const handleDeleteConnection = (params: any) => {
-        const connectionId = params.row.id;
-        const connectionName = params.row.name;
+    const handleDeleteContact = (params: any) => {
+        const contactId = params.row.id;
+        const contactName = params.row.name;
+        const contactPhone = params.row.phone;
 
-        setSelectedConnection({
-            id: connectionId,
-            name: connectionName
+        setSelectedContact({
+            id: contactId,
+            name: contactName,
+            phone: contactPhone
         })
         setOpenDeleteDialog(true);
-    }
-
-    const handleRowClick = (params: any) => {
-        const connectionId = params.row.id;
-        navigate(`/connections/${connectionId}`);
     }
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', flex: 0.5, minWidth: 80 },
         { field: 'name', headerName: 'Nome', flex: 1, minWidth: 150 },
-        { field: 'contacts', headerName: 'Contatos', type: 'number', flex: 0.8, minWidth: 100 },
+        { field: 'phone', headerName: 'Telefone', flex: 0.8, minWidth: 100 },
         {
             field: 'actions',
             headerName: 'Ações',
             renderCell: (params) => (
               <Box className="flex flex-row justify-center" gap={2}>
-                <Button startIcon={ <EditIcon /> } variant="text" onClick={() => handleEditConnection(params)}>
+                <Button startIcon={ <EditIcon /> } variant="text" onClick={() => handleEditContact(params)}>
                     Editar
                 </Button>
-                <Button startIcon={ <DeleteIcon /> } variant="text" color="error" onClick={() => handleDeleteConnection(params)}>
+                <Button startIcon={ <DeleteIcon /> } variant="text" color="error" onClick={() => handleDeleteContact(params)}>
                     Excluir
                 </Button>
               </Box>
@@ -124,21 +130,21 @@ export function Connections({user}: any) {
 
                 <Box className="mt-5 mx-8 flex flex-row justify-center">
                     <DataTable
-                        title="Conexões"
+                        title="Contatos"
                         rows={rows}
                         columns={columns}
                         paginationModel={paginationModel}
-                        onRowClick={handleRowClick}
                     />
                 </Box>
 
-                <SaveConnectionDialog open={open} connection={selectedConnection} handleClose={handleClose} />
+                <SaveContactDialog open={open} handleClose={handleClose} contact={selectedContact} connectionId={connectionId}/>
                 <DeleteDialog
                     open={openDeleteDialog}
-                    connection={selectedConnection}
+                    contact={selectedContact}
+                    connectionId={connectionId}
                     handleClose={() => {
-                        setSelectedConnection(null)
-                        setOpenDeleteDialog(false)
+                        setSelectedContact(null);
+                        setOpenDeleteDialog(false);
                     }}
                 />
             </Box>

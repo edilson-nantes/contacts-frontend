@@ -63,7 +63,7 @@ export async function updateContact(connectionId: string, id: string, contact: C
     }
 }
 
-export async function deleteContact(connectionId: string, id: string): Promise<any> {
+export async function deleteContact(id: string, connectionId: string,): Promise<any> {
     try {
         const user = auth.currentUser;
         if (user) {

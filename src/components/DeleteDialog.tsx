@@ -6,17 +6,22 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Connection } from "../services/connectionService";
 import { useConnections } from "../store/connections";
+import { Contact } from "../services/contactService";
+import { useContacts } from "../store/contacts";
 
 interface DeleteDialogProps {
     open: boolean;
-    connection: Connection | null;
+    connection?: Connection | null;
+    contact?: Contact | null;
+    connectionId?: string;
     handleClose: () => void;
 }
 
 
-export function DeleteDialog({open, connection, handleClose}: DeleteDialogProps) {
+export function DeleteDialog({open, connection, contact, connectionId, handleClose}: DeleteDialogProps) {
     const { removeConnection } = useConnections();
-    
+    const { removeContact } = useContacts();
+
     return (
         <Dialog
             open={open}
@@ -27,7 +32,7 @@ export function DeleteDialog({open, connection, handleClose}: DeleteDialogProps)
 
             <DialogContent>
                 <DialogContentText>
-                    Você tem certeza que quer excluir {connection?.name}?
+                    Você tem certeza que quer excluir {connection?.name} {contact?.name}?
                 </DialogContentText>
             </DialogContent>
 
@@ -37,6 +42,11 @@ export function DeleteDialog({open, connection, handleClose}: DeleteDialogProps)
                     if (connection?.id) {
                         removeConnection(connection.id);
                     }
+
+                    if (contact?.id) {
+                        removeContact(contact.id, connectionId as string);
+                    }
+
                     handleClose();
                 }}>Confirmar</Button>
             </DialogActions>
