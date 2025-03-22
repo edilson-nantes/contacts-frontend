@@ -5,17 +5,40 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useConnections } from "../store/connections";
+import { Connection } from "../services/connectionService";
 
 interface SaveConnectionDialogProps {
     open: boolean
+    connection?: Connection | null
     handleClose: () => void
 }
 
-export function SaveConnectionDialog({open, handleClose}: SaveConnectionDialogProps) {
+export function SaveConnectionDialog({open, connection, handleClose}: SaveConnectionDialogProps) {
     const [name, setName] = useState('');
-    const { addConnection } = useConnections();
+    const { addConnection, editConnection } = useConnections();
+
+    useEffect(() => {
+        if (connection) {
+            setName(connection.name);
+        } else {
+            setName("");
+        }
+    }, [connection]);
+
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (connection) {
+            await editConnection({ ...connection, name });
+        } else {
+            await addConnection({ name });
+        }
+
+        handleClose();
+    };
     
     return (
         <Dialog
@@ -25,18 +48,14 @@ export function SaveConnectionDialog({open, handleClose}: SaveConnectionDialogPr
             slotProps={{
             paper: {
                 component: 'form',
-                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                    event.preventDefault();
-                    addConnection({name});
-                    handleClose();
-                },
+                onSubmit: handleSubmit,
             },
             }}
         >
-            <DialogTitle>Nova Conexão</DialogTitle>
+            <DialogTitle>{connection ? 'Editar' : 'Nova'} conexão</DialogTitle>
             <DialogContent>
             <DialogContentText>
-                Cria uma nova conexão
+                {connection ? 'Edite a conexão' : 'Adicione uma nova conexão'}
             </DialogContentText>
             <TextField
                 autoFocus
@@ -47,11 +66,15 @@ export function SaveConnectionDialog({open, handleClose}: SaveConnectionDialogPr
                 label="Nome"
                 fullWidth
                 variant="standard"
+                value={name}
                 onChange={(e) => setName(e.target.value)}
             />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>Cancelar</Button>
+                <Button onClick={() => {
+                    setName('');
+                    handleClose();
+                }}>Cancelar</Button>
                 <Button type="submit">Salvar</Button>
             </DialogActions>
         </Dialog>

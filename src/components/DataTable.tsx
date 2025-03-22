@@ -43,6 +43,7 @@ export function DataTable({ rows,columns, paginationModel }: DataTableProps) {
             </Box>
             <DataGrid 
                 rows={searchText ? filteredRows : rows}
+                getRowId={(row) => row.id}
                 columns={columns}
                 initialState={{ pagination: { paginationModel } }}
                 pageSizeOptions={[10, 20, 50]}

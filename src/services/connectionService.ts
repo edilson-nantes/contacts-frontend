@@ -1,7 +1,8 @@
 import { auth, db } from "../../firebaseConfig";
-import { addDoc, collection, getDocs, } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, updateDoc, } from "firebase/firestore";
 
 export interface Connection {
+    id?: string;
     name: string;
 }
 
@@ -23,7 +24,7 @@ export async function createConnection(connection: Connection): Promise<any> {
     }
 }
 
-export async function fetchConnections(): Promise<Connection[]> {
+export async function fetchConnections(): Promise<any> {
     try {
         const user = auth.currentUser;
         if (user) {
@@ -34,10 +35,25 @@ export async function fetchConnections(): Promise<Connection[]> {
                 name: doc.data().name,
             }));
             return connections;
-        } else {
-            return []; // Add this line to return an empty array if user is falsy
+        }
+        else {
+            return undefined; 
         }
     } catch (error) {
-        return []; // You may also want to handle the error here
+        return error; 
+    }
+}
+//1vmKTSc2FPzi3Zdh886m
+export async function updateConnection(id: string, connection: Connection): Promise<any> {
+    try {
+        const user = auth.currentUser;
+        if (user) {
+            const connectionRef = doc(db, "Users", user.uid, "Connections", id);
+            await updateDoc(connectionRef, {
+                name: connection.name
+            });
+        }
+    } catch (error) {
+        return error;
     }
 }

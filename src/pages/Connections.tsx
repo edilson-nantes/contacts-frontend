@@ -11,22 +11,26 @@ import { useEffect, useState } from "react";
 import { SaveConnectionDialog } from "../components/SaveConnectionDialog";
 import { Connection } from "../services/connectionService";
 import { useConnections } from "../store/connections";
+import Button from "@mui/material/Button";
 
 
-//TODO: Buscar dados das conexões no firebase
 export function Connections({user}: any) {
     if (!user) {
         return <Navigate to="/" />
     }
 
+    const { drawerOpen, toggleDrawer } = useDrawer();
     const [open, setOpen] = useState(false);
     const {loadConnections, connections} = useConnections();
     const [rows, setRows] = useState<Connection[]>([]);
+    const [selectedConnection, setSelectedConnection] = useState<Connection | null>(null);
     
     useEffect(() => {
         async function loadConnectionsAsync() {
-            const connections = await loadConnections();
-            setRows(connections);
+            const newConnections = await loadConnections();
+            if (JSON.stringify(newConnections) !== JSON.stringify(rows)) {
+                setRows(newConnections);
+            }
         }
         loadConnectionsAsync();
     }, [connections]);
@@ -36,10 +40,9 @@ export function Connections({user}: any) {
     };
 
     const handleClose = () => {
+        setSelectedConnection(null);
         setOpen(false);
     };
-
-    const { drawerOpen, toggleDrawer } = useDrawer();
 
     const buttons = {
         addButton: {
@@ -55,11 +58,37 @@ export function Connections({user}: any) {
         }
     }
 
+    const handleEditConnection = (params: any) => {
+        const connectionId = params.row.id;
+        const connectionName = params.row.name;
+
+        setSelectedConnection({
+            id: connectionId,
+            name: connectionName
+        });
+
+        handleClickOpen();
+    }
+
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'ID', flex: 0.5, minWidth: 80 },
         { field: 'name', headerName: 'Nome', flex: 1, minWidth: 150 },
         { field: 'contacts', headerName: 'Contatos', type: 'number', flex: 0.8, minWidth: 100 },
-        { field: 'actions', headerName: 'Ações', type: 'number', flex: 0.8, minWidth: 120 },
+        {
+            field: 'actions',
+            headerName: 'Ações',
+            renderCell: (params) => (
+              <Box className="flex flex-row justify-center" gap={2}>
+                <Button variant="text" onClick={() => handleEditConnection(params)}>
+                    Editar
+                </Button>
+                <Button variant="text">
+                    Excluir
+                </Button>
+              </Box>
+              
+            ), flex: 0.8, minWidth: 100
+          },
       ];
 
     const paginationModel = { page: 0, pageSize: 10 };
@@ -87,7 +116,7 @@ export function Connections({user}: any) {
 
                 </Box>
 
-                <SaveConnectionDialog open={open} handleClose={handleClose} />
+                <SaveConnectionDialog open={open} connection={selectedConnection} handleClose={handleClose} />
             </Box>
         </Container>
     )
